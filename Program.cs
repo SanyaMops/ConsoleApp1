@@ -3,6 +3,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 var botClient = new TelegramBotClient("enter your token");
 
@@ -51,22 +52,28 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     switch (messageText)
     {
         case "/start":
-            string text = nameUser +
-@", Вот Список команд:
-/start - запуск бота
-/data - Ввести ФИО
-/numberPhone - Ввести номер телефона";
-           botClient.SendTextMessageAsync(message.From.Id, text);
+            string text = $"{name}, Вот список <b>команд</b>\n";
+         await botClient.SendTextMessageAsync(message.From.Id, text, ParseMode.Html);
             break;
         case "/data":
             string data =
-@"Фамилию Имя Отчество быстро написал";
+                           @"Фамилию Имя Отчество быстро написал";
             botClient.SendTextMessageAsync(message.From.Id, data);
             break;
         case "/numberPhone":
+            List<List<KeyboardButton>> buttons = new();
+            buttons.Add(new List<KeyboardButton>()
+            { 
+                new KeyboardButton("Поделиться номером") 
+                { 
+                    RequestContact = true
+                }
+
+            });
+            ReplyKeyboardMarkup kb = new ReplyKeyboardMarkup(buttons) { OneTimeKeyboard = true, ResizeKeyboard = true };
             string numberPhone =
-@"Цыферки свои оставь";
-            botClient.SendTextMessageAsync(message.From.Id, numberPhone);
+                                 @"Цыферки свои оставь";
+           await botClient.SendTextMessageAsync(message.From.Id, numberPhone, replyMarkup:kb);
             break;
         default:
             break;
